@@ -12,6 +12,17 @@ function AppendFile(path) {
 	.catch(console.error);
 }
 
+AppendFile.prototype.clear = function() {
+    var filePath = this._path;
+    var done = this._promise
+		.then(function() {
+		    return writeFileAsync(filePath, '');
+		})
+		.catch(console.error);
+	this._promise = done;
+	return done;
+};
+
 AppendFile.prototype.append = function() {
     var str =
 	Array.prototype.slice.call(arguments)
@@ -25,11 +36,13 @@ AppendFile.prototype.append = function() {
 	    .join(' ');
 
     var filePath = this._path;
-    this._promise
-	.then(function() {
-	    return appendFileAsync(filePath, str + '\n');
-	})
-	.catch(console.error);
+    var done = this._promise
+		.then(function() {
+			return appendFileAsync(filePath, str + '\n');
+		})
+		.catch(console.error);
+	this._promise = done;
+	return done;
 };
 
 module.exports = AppendFile;
